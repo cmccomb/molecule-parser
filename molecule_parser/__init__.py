@@ -97,27 +97,41 @@ def save_csv(csvName, scaledDataSet):
 
 
 def process_cif(file, selected_model, selected_chain, selected_residues):
-    structure, structureID, _ = load_cif_file(file.name)
-    atom_coords = extract_chain_atoms(structure, selected_model, selected_chain, selected_residues)
-    if not atom_coords:
-        return "Error: No atoms found for the selected criteria."
-    scaledDataSet = make_data_the_proper_format(atom_coords)
-    csvName = f"{structureID}_Model_{selected_model}_Chain_{selected_chain}_Residues.csv"
-    save_csv(csvName, scaledDataSet)
-    return gradio.File(csvName, label=f"Download {csvName}", interactive=False)
+    if file is None:
+        print("File is none")
+        return gradio.File(None, label="Download CSV", interactive=False)
+    else:
+        print("File is not none")
+        structure, structureID, _ = load_cif_file(file.name)
+        atom_coords = extract_chain_atoms(structure, selected_model, selected_chain, selected_residues)
+        if not atom_coords:
+            return "Error: No atoms found for the selected criteria."
+        scaledDataSet = make_data_the_proper_format(atom_coords)
+        csvName = f"{structureID}_Model_{selected_model}_Chain_{selected_chain}_Residues.csv"
+        save_csv(csvName, scaledDataSet)
+        return gradio.File(csvName, label=f"Download {csvName}", interactive=False)
 
 def update_model_dropdown(file):
-    structure, _, models = load_cif_file(file.name)
+    if file is None:
+        models = []
+    else:
+        _, _, models = load_cif_file(file.name)
     return gradio.update(choices=models, value=models[0] if models else None)
 
 def update_chain_dropdown(file, selected_model):
-    structure, _, _ = load_cif_file(file.name)
-    chains = extract_chains_from_model(structure, selected_model)
+    if file is None:
+        chains = []
+    else:
+        structure, _, _ = load_cif_file(file.name)
+        chains = extract_chains_from_model(structure, selected_model)
     return gradio.update(choices=chains, value=chains[0] if chains else None)
 
 def update_residue_dropdown(file, selected_model, selected_chain):
-    structure, _, _ = load_cif_file(file.name)
-    residues = extract_residues_from_chain(structure, selected_model, selected_chain)
+    if file is None:
+        residues = []
+    else:
+        structure, _, _ = load_cif_file(file.name)
+        residues = extract_residues_from_chain(structure, selected_model, selected_chain)
     return gradio.update(choices=residues, value=residues if residues else [])
 
 def gui():
@@ -129,13 +143,12 @@ def gui():
                 model_dropdown = gradio.Dropdown(label="Select Model", choices=[], interactive=True)
                 chain_dropdown = gradio.Dropdown(label="Select Chain", choices=[], interactive=True)
                 residue_dropdown = gradio.Dropdown(label="Select Residues", choices=[], interactive=True, multiselect=True)
-                process_button = gradio.Button(value=" > Process > ")
             with gradio.Column():
                 file_output = gradio.File(label="Download CSV", interactive=False)
 
         file_input.change(update_model_dropdown, inputs=[file_input], outputs=[model_dropdown])
         model_dropdown.change(update_chain_dropdown, inputs=[file_input, model_dropdown], outputs=[chain_dropdown])
         chain_dropdown.change(update_residue_dropdown, inputs=[file_input, model_dropdown, chain_dropdown], outputs=[residue_dropdown])
-        process_button.click(process_cif, inputs=[file_input, model_dropdown, chain_dropdown, residue_dropdown], outputs=[file_output])
+        residue_dropdown.change(process_cif, inputs=[file_input, model_dropdown, chain_dropdown, residue_dropdown], outputs=[file_output])
 
     return demo
