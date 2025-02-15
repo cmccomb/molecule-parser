@@ -47,7 +47,7 @@ def save_gltf(model_name: str, atom_coordiantes: list[list[float]]):
     radii = set([atom[3] for atom in atom_coordiantes])
 
     # Create a color map based on the number of unique radii
-    colors = matplotlib.pyplot.cm.get_cmap("gist_ncar", len(radii))
+    colors = matplotlib.pyplot.cm.get_cmap("jet", len(radii))
 
     # For each atom, create a sphere and translate it to the correct position.
     for i, atom in enumerate(atom_coordiantes):
