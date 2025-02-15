@@ -8,10 +8,10 @@ version = "0.1.0"
 dependencies = [
   "biopython",
   "gradio>=5.11.0",
-  "numpy",
-  "trimesh",
   "matplotlib",
-  "scipy"
+  "numpy",
+  "scipy",
+  "trimesh",
 ]
 
 [project.optional-dependencies]
