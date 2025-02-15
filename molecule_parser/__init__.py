@@ -2,11 +2,12 @@ import csv
 import os
 
 import gradio
-import numpy
-import pyvista
 from Bio.PDB.MMCIF2Dict import MMCIF2Dict
 from Bio.PDB.MMCIFParser import MMCIFParser
 import Bio.PDB
+
+import trimesh
+import trimesh.visual
 
 
 def load_cif_file(file_name: str):
@@ -120,6 +121,40 @@ def save_csv(csvName, scaledDataSet):
         write.writerows(scaledDataSet)
 
 
+def save_gltf(model_name, scaled_dataset):
+    """
+    Creates a glTF file where each atom is represented by a sphere at the given coordinates,
+    scaled by its radius.
+
+    Parameters:
+      gltf_name (str): Filename for the output glTF file.
+      scaled_dataset (list of lists): Each entry is [x, y, z, radius].
+
+    Returns:
+      None
+    """
+    # Create an empty scene
+    scene = trimesh.Scene()
+
+    # For each atom, create a sphere and translate it to the correct position.
+    for i, atom in enumerate(scaled_dataset):
+        # Get info for the atom
+        x, y, z, radius = atom
+
+        # Create a sphere using an icosphere (subdivisions=2 gives moderate detail)
+        sphere = trimesh.creation.icosphere(subdivisions=2, radius=radius)
+
+        # Move the sphere to the atom's location
+        sphere.apply_translation([x, y, z])
+
+        # Add the sphere to the scene with a unique node name
+        scene.add_geometry(sphere, node_name=f"sphere_{i}")
+
+    # Export the entire scene as a glTF file.
+    mesh = scene.to_geometry()
+    mesh.export(model_name)
+
+
 def process_cif(file, selected_model, selected_chain, selected_residues):
     if file is None:
         return gradio.File(
@@ -136,34 +171,13 @@ def process_cif(file, selected_model, selected_chain, selected_residues):
         csvName = (
             f"{structureID}_Model_{selected_model}_Chain_{selected_chain}_Residues.csv"
         )
+        gltf_name = csvName.replace(".csv", ".obj")
         save_csv(csvName, scaled_dataset)
+        save_gltf(gltf_name, scaled_dataset)
 
-        # Create a pyvista plotter
-        pyvista.start_xvfb()
-        plotter = pyvista.Plotter()
-
-        # Create a point cloud from your scaled dataset
-        scaledData = numpy.array(scaled_dataset)
-        points = scaledData[:, 0:3]
-        radii = scaledData[:, 3]
-
-        # Create a PolyData object with the points
-        point_cloud = pyvista.PolyData(points)
-        # Add the radii as point data
-        point_cloud["radius"] = radii
-
-        # Use glyphing to place a sphere at each point scaled by its radius
-        glyph = point_cloud.glyph(
-            scale="radius",
-            geom=pyvista.Sphere(radius=1.0, phi_resolution=5, theta_resolution=5),
-        )
-        plotter.add_mesh(glyph)
-
-        # Save the plot to a file
-        plotter.export_gltf("model.gltf", inline_data=True)
         return gradio.File(
             csvName, label=f"Download {csvName}", interactive=True
-        ), gradio.Model3D("model.gltf", label="Model Preview")
+        ), gradio.Model3D(gltf_name, label="Model Preview")
 
 
 def update_model_dropdown_from_file(file):
