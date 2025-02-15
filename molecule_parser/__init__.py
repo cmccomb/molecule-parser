@@ -153,14 +153,14 @@ def process_cif(file, selected_model, selected_chain, selected_residues):
         point_cloud["radius"] = radii
 
         # Use glyphing to place a sphere at each point scaled by its radius
-        glyph = point_cloud.glyph(scale="radius", geom=pyvista.Sphere(radius=1.0))
+        glyph = point_cloud.glyph(
+            scale="radius",
+            geom=pyvista.Sphere(radius=1.0, phi_resolution=10, theta_resolution=10),
+        )
         plotter.add_mesh(glyph)
 
         # Save the plot to a file
-        model_data = plotter.export_obj("model.obj")
-
-        # Save the plot to a file
-        plotter.export_obj("model.obj")
+        plotter.export_gltf("model.obj")
         return gradio.File(
             csvName, label=f"Download {csvName}", interactive=True
         ), gradio.Model3D("model.obj", label="Model Preview")
