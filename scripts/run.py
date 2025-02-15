@@ -1,3 +1,3 @@
 import molecule_parser
 
-molecule_parser.gui().launch(debug=True)
+molecule_parser.launch(debug=True)

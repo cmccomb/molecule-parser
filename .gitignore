@@ -1,4 +1,6 @@
 .idea/
+*.csv
+*.obj
 
 ### Python template
 # Byte-compiled / optimized / DLL files
