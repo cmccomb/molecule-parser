@@ -175,6 +175,7 @@ def update_model_dropdown_from_file(file):
 
 def update_model_dropdown_from_code(code: str):
     if len(code) < 4:
+        pdb_filename = None
         models = []
     else:
 
@@ -187,7 +188,10 @@ def update_model_dropdown_from_code(code: str):
         )
 
         _, _, models = load_cif_file(pdb_filename)
-    return gradio.update(choices=models, value=models[0] if models else None)
+
+    return gradio.update(
+        choices=models, value=models[0] if models else None
+    ), gradio.update(value=pdb_filename)
 
 
 def update_chain_dropdown(file, selected_model):
@@ -217,7 +221,7 @@ def gui():
             with gradio.Column():
                 with gradio.Row():
                     file_input = gradio.File(label="Upload CIF File")
-                    code_dropdown = gradio.Text(label="Enter PDB Code")
+                    code_dropdown = gradio.Textbox(label="Enter PDB Code")
 
                 model_dropdown = gradio.Dropdown(
                     label="Select Model", choices=[], interactive=True
@@ -243,23 +247,22 @@ def gui():
         code_dropdown.change(
             update_model_dropdown_from_code,
             inputs=[code_dropdown],
-            outputs=[model_dropdown],
+            outputs=[model_dropdown, file_input],
         )
         model_dropdown.change(
             update_chain_dropdown,
-            inputs=[file_input, code_dropdown, model_dropdown],
+            inputs=[file_input, model_dropdown],
             outputs=[chain_dropdown],
         )
         chain_dropdown.change(
             update_residue_dropdown,
-            inputs=[file_input, code_dropdown, model_dropdown, chain_dropdown],
+            inputs=[file_input, model_dropdown, chain_dropdown],
             outputs=[residue_dropdown],
         )
         residue_dropdown.change(
             process_cif,
             inputs=[
                 file_input,
-                code_dropdown,
                 model_dropdown,
                 chain_dropdown,
                 residue_dropdown,
