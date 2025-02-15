@@ -4,8 +4,8 @@ This module contains functions to save the scaled dataset to a CSV file and a gl
 
 import csv
 
-import trimesh
 import matplotlib.pyplot
+import trimesh
 
 
 def save_csv(csv_name: str, scaled_dataset: list[list[float]]):

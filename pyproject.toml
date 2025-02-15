@@ -10,7 +10,8 @@ dependencies = [
   "gradio>=5.11.0",
   "numpy",
   "trimesh",
-  "matplotlib"
+  "matplotlib",
+  "scipy"
 ]
 
 [project.optional-dependencies]
