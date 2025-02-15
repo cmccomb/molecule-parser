@@ -155,7 +155,7 @@ def process_cif(file, selected_model, selected_chain, selected_residues):
         # Use glyphing to place a sphere at each point scaled by its radius
         glyph = point_cloud.glyph(
             scale="radius",
-            geom=pyvista.Sphere(radius=1.0, phi_resolution=10, theta_resolution=10),
+            geom=pyvista.Sphere(radius=1.0, phi_resolution=5, theta_resolution=5),
         )
         plotter.add_mesh(glyph)
 
@@ -185,7 +185,7 @@ def update_model_dropdown_from_code(code: str):
 
         # Download the MMCIF file using the retrieve_pdb_file method
         pdb_filename = pdb_list.retrieve_pdb_file(
-            code, pdir="data/PDB_files", file_format="mmCif"
+            code, pdir="data", file_format="mmCif"
         )
 
         _, _, models = load_cif_file(pdb_filename)
