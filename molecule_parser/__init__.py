@@ -160,10 +160,10 @@ def process_cif(file, selected_model, selected_chain, selected_residues):
         plotter.add_mesh(glyph)
 
         # Save the plot to a file
-        plotter.export_gltf("model.obj")
+        plotter.export_gltf("model.gltf", inline_data=True)
         return gradio.File(
             csvName, label=f"Download {csvName}", interactive=True
-        ), gradio.Model3D("model.obj", label="Model Preview")
+        ), gradio.Model3D("model.gltf", label="Model Preview")
 
 
 def update_model_dropdown_from_file(file):
