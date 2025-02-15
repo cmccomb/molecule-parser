@@ -1,2 +1,2 @@
 biopython
-gradio
+gradio>=5.11.0
