@@ -139,6 +139,7 @@ def process_cif(file, selected_model, selected_chain, selected_residues):
         save_csv(csvName, scaled_dataset)
 
         # Create a pyvista plotter
+        pyvista.start_xvfb()
         plotter = pyvista.Plotter()
 
         # Create a point cloud from your scaled dataset
