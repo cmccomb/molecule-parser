@@ -141,8 +141,8 @@ def save_gltf(model_name, scaled_dataset):
         # Get info for the atom
         x, y, z, radius = atom
 
-        # Create a sphere using an icosphere (subdivisions=2 gives moderate detail)
-        sphere = trimesh.creation.icosphere(subdivisions=2, radius=radius)
+        # Create a sphere using an icosphere
+        sphere = trimesh.creation.icosphere(subdivisions=1, radius=radius)
 
         # Move the sphere to the atom's location
         sphere.apply_translation([x, y, z])
