@@ -247,17 +247,23 @@ def gui():
         )
         model_dropdown.change(
             update_chain_dropdown,
-            inputs=[file_input, model_dropdown],
+            inputs=[file_input, code_dropdown, model_dropdown],
             outputs=[chain_dropdown],
         )
         chain_dropdown.change(
             update_residue_dropdown,
-            inputs=[file_input, model_dropdown, chain_dropdown],
+            inputs=[file_input, code_dropdown, model_dropdown, chain_dropdown],
             outputs=[residue_dropdown],
         )
         residue_dropdown.change(
             process_cif,
-            inputs=[file_input, model_dropdown, chain_dropdown, residue_dropdown],
+            inputs=[
+                file_input,
+                code_dropdown,
+                model_dropdown,
+                chain_dropdown,
+                residue_dropdown,
+            ],
             outputs=[file_output, model_preview],
         )
 
