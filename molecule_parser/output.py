@@ -55,7 +55,7 @@ def save_gltf(model_name: str, atom_coordiantes: list[list[float]]):
         x, y, z, radius = atom
 
         # Create a sphere using an icosphere
-        sphere = trimesh.creation.icosphere(subdivisions=1, radius=radius)
+        sphere = trimesh.creation.icosphere(subdivisions=0, radius=radius)
 
         # Move the sphere to the atom's location
         sphere.apply_translation([x, y, z])

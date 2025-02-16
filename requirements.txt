@@ -3,3 +3,4 @@ gradio>=5.11.0
 trimesh
 numpy
 matplotlib
+scipy
